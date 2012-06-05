@@ -8,25 +8,25 @@ class GetListComponent extends Component {
 
 	public $settings = array();
     protected $_defaults = array(
-		'cache'						=> true,				//must use especially if order sorting is enabled
-		'log'						=> true,				//if enabled, it'll log it, everytime new cache created
-    	'set_disable'				=> false,				//enable to pass list as a variable to the view
-    	'set_variable' 				=> 'controllersList',	//variable name for getting controller lists in views
-		'exclude_currentController'	=> false,				//exclude current controller
-    	'exclude_appControllers'	=> true,				//exclude AppController and PluginAppControllers
-        'exclude'					=> array(),				//for excluding some extra controller names
-        'include'					=> array(),				//for including some extra controller names
-		'order_sort'				=> 'desc',				//desc or asc sorting
-		'order_by'					=> 'order',				//sort by name or order
-		'order_disabled'			=> false,				//for using this sorting you can add a "$order" property in your controller. enabling cache for this deadly recommended.
-    	'plugins_disable'			=> false,				//don't scan plugins
-    	'plugins_exclude'			=> array(),				//for excluding some extra plugin's controller
-        'plugins_include'			=> array()				//for including some extra plugin's controller
+		'cache'						=> true,					//must use especially if order sorting is enabled
+		'log'						=> true,					//if enabled, it'll log it, everytime new cache created
+    	'set_disable'				=> false,					//enable to pass list as a variable to the view
+    	'set_variable' 				=> 'controllersList',		//variable name for getting controller lists in views
+		'exclude_currentController'	=> false,					//exclude current controller
+    	'exclude_appControllers'	=> true,					//exclude AppController and PluginAppControllers
+        'exclude'					=> array(),					//for excluding some extra controller names
+        'include'					=> array(),					//for including some extra controller names
+		'order_sort'				=> 'desc',					//desc or asc sorting
+		'order_by'					=> 'name',					//sort by name or order
+		'order_disabled'			=> false,					//for using this sorting you can add a "$order" property in your controller. enabling cache for this deadly recommended.
+    	'plugins_disable'			=> false,					//don't scan plugins
+    	'plugins_exclude'			=> array(),					//for excluding some extra plugin's controller
+        'plugins_include'			=> array()					//for including some extra plugin's controller
     );
 
     public function initialize(Controller $controller) {
     	$this->controller = $controller;
-		$this->settings = $this->_defaults + $this->settings;
+		$this->settings = $this->settings + $this->_defaults;
 
 		$return = $this->_checkOrMake();
 		
@@ -49,17 +49,16 @@ class GetListComponent extends Component {
     	return $this->controllers;
     }
 
-    protected function _exclude(Array $objects, Array $excludes, $type = 'controller') {
-
-		if(empty($excludes['exclude']) || empty($objects)) {
+    protected function _exclude(Array $objects, Array $excludes) {
+		if(empty($excludes) || empty($objects)) {
 			return $objects;
 		}
 
-    	$excludes=$excludes['exclude'];
-
-		return $objects = array_filter($objects, function($key) use ($excludes, $type) {
-			return ($type === 'controller') ? !in_array($key['Controller']['key'], $excludes) : !in_array($key, $excludes);
+		$objects = array_filter($objects, function($object) use ($excludes) {
+			return empty($object['Controller']['key']) ? !in_array($object, $excludes) : !in_array($object['Controller']['key'], $excludes);
 		});
+		
+		return $objects;
     }
 
     protected function _include(Array $objects, Array $includes, $type = 'controller') {
@@ -75,7 +74,7 @@ class GetListComponent extends Component {
 				$baseName = $this->_baseName($splitted[1]);
 				$includes[$key] = array(
 					'Controller' => array(
-						'key' => $baseName,
+						'key' => strtolower($baseName),
 						'properties' => array(
 							'name'			=> $this->_humanize($baseName),
 							'controller'	=> $splitted[1],
@@ -99,6 +98,7 @@ class GetListComponent extends Component {
 			$importName = $controller['Controller']['importName'];
 			extract($controller['Controller']['properties']);
 			
+
 			App::uses($controller, $importName);
 			if(class_exists($controller)) {
 				$controllers[$key]['Controller']['order'] = isset($controller::$order) ? intval($controller::$order) : 0;
@@ -112,14 +112,12 @@ class GetListComponent extends Component {
     }
 
     protected function _humanize($name = '') { return Inflector::humanize(Inflector::underscore($name)); }
-	protected function _baseName($name = '') { return $name === 'AppController' ? $name : str_replace(array('Controller', 'App'), '', $name); }
+	protected function _baseName($name = '') { return $name === 'AppController' ? $this->_humanize($name) : str_replace(array('Controller', 'App'), '', $name); }
 	
 	protected function _make($resetCache = false) {
 		if($resetCache) { $this->_flushCache(); }
 		
 		extract($this->settings);
-		
-		if($exclude_appControllers) { $exclude[] = 'App'; }
 
 		$controllers = App::objects('Controller', null, false);
 		foreach($controllers as $key => $controller) {
@@ -135,13 +133,12 @@ class GetListComponent extends Component {
 				)
 			);
 		}
-
 		if(!$plugins_disable) {
-			
 			$this->pluginList = $plugins = $this->_exclude(App::objects('plugin', null, false), $plugins_exclude, 'plugin');
 			$this->pluginList = $plugins = $this->_include($plugins, $plugins_include, 'plugin');
-
+			
 			foreach($plugins as $plugin) {
+				
 				$pluginControllers = App::objects("{$plugin}.Controller", null, false);
 				
 				if(empty($pluginControllers)) { continue; }
@@ -169,9 +166,9 @@ class GetListComponent extends Component {
 			}
 		}
 
-		if($exclude_currentController && $this->controller != null) {
-			$exclude[] = array('Controller' => array('name' => $this->controller->name));
-		}
+		if($exclude_currentController) { $exclude[] = $this->controller->name; }
+		if($exclude_appControllers) { $exclude[] = 'App Controller'; }
+		
 
 		$controllers = $this->_exclude($controllers, $exclude);
 		$controllers = $this->_include($controllers, $include);
@@ -193,7 +190,7 @@ class GetListComponent extends Component {
 	}
 
 	protected function _checkOrMake() {
-		if($this->settings['cache']) {
+		if($this->settings['cache'] !== false) {
 			$cached = Cache::read('ControllersListPlugin');
 			
 			if(empty($cached)) {
