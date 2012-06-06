@@ -1,6 +1,6 @@
 # CakePHP ControllersList
 
-A plugin contains a component for generating organized controllers list with include,exclude,order,sort and cache options.
+A plugin contains component for generating organized controllers list with include,exclude,order,sort and cache options.
 
 ## Requirements
 * CakePHP 2.1.0 or greater.
