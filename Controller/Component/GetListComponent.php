@@ -134,8 +134,8 @@ class GetListComponent extends Component {
 			);
 		}
 		if(!$plugins_disable) {
-			$this->pluginList = $plugins = $this->_exclude(App::objects('plugin', null, false), $plugins_exclude, 'plugin');
-			$this->pluginList = $plugins = $this->_include($plugins, $plugins_include, 'plugin');
+			$this->pluginList = $plugins = $this->_exclude(CakePlugin::loaded(), $plugins_exclude);
+			$this->pluginList = $plugins = $this->_include($plugins, $plugins_include);
 			
 			foreach($plugins as $plugin) {
 				
