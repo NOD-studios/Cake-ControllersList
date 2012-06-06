@@ -21,6 +21,7 @@ $ git submodule add https://github.com/JacopKane/Cake-ControllersList.git /path/
 
 ###Example:
 ```Php
+<?php
 //Config/bootstrap.php
 CakePlugin::load('ControllersList'));
 
@@ -31,10 +32,12 @@ public $components = array('ControllersList.GetList' => array(
 		'order_by'					=> 'order',
 		'cache'						=> false
 ));
+?>
 ```
 
 ###Other Options:
 ```Php
+<?php
 array(
 	'cache'						=> true,					//must use especially if order sorting is enabled
 	'log'						=> true,					//if enabled, it'll log it, everytime new cache created
@@ -51,4 +54,5 @@ array(
 	'plugins_exclude'			=> array(),					//for excluding some extra plugin's controller
     'plugins_include'			=> array()					//for including some extra plugin's controller
 );
+?>
 ```
