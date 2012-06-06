@@ -20,7 +20,7 @@ $ git submodule add https://github.com/JacopKane/Cake-ControllersList.git /path/
 * Define the component at your controller.
 
 ###Example:
-```PHP
+```Php
 //Config/bootstrap.php
 CakePlugin::load('ControllersList'));
 
@@ -34,7 +34,8 @@ public $components = array('ControllersList.GetList' => array(
 ```
 
 ###Other Options:
-```array(
+```Php
+array(
 	'cache'						=> true,					//must use especially if order sorting is enabled
 	'log'						=> true,					//if enabled, it'll log it, everytime new cache created
 	'set_disable'				=> false,					//enable to pass list as a variable to the view
