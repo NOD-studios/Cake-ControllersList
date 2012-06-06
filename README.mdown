@@ -30,11 +30,11 @@ public $components = array('ControllersList.GetList' => array(
 		'plugins_exclude'			=> array('DebugKit', 'CakeFoo'),
 		'order_by'					=> 'order',
 		'cache'						=> false
-));```
+));
+```
 
 ###Other Options:
-```
-array(
+```array(
 	'cache'						=> true,					//must use especially if order sorting is enabled
 	'log'						=> true,					//if enabled, it'll log it, everytime new cache created
 	'set_disable'				=> false,					//enable to pass list as a variable to the view
