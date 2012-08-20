@@ -33,7 +33,7 @@ class GetListComponent extends Component {
 		extract($this->settings);
 		$this->controller->{$set_variable} = $this->controllers;
 		
-		if(!$set_disable) {
+		if (!$set_disable) {
 			$this->controller->set($set_variable, $this->controllers);
 		}
 		
@@ -41,7 +41,7 @@ class GetListComponent extends Component {
     }
 
     public function reset($flushCache = false) {
-		if($flushCache) { $this->_flushCache(); }
+		if ($flushCache) { $this->_flushCache(); }
 		return is_array($this->initialize($this->controller));
 	}
 
@@ -50,7 +50,7 @@ class GetListComponent extends Component {
     }
 
     protected function _exclude(Array $objects, Array $excludes) {
-		if(empty($excludes) || empty($objects)) {
+		if (empty($excludes) || empty($objects)) {
 			return $objects;
 		}
 
@@ -63,12 +63,12 @@ class GetListComponent extends Component {
 
     protected function _include(Array $objects, Array $includes, $type = 'controller') {
 
-    	if(empty($includes['include'])) {
+    	if (empty($includes['include'])) {
 			return $objects;
 		}
 		$includes = $includes['include'];
 
-		if($type === 'controller') {
+		if ($type === 'controller') {
 			foreach($includes as $key => $include) {
 				$splitted = pluginSplit($include);
 				$baseName = $this->_baseName($splitted[1]);
@@ -93,14 +93,14 @@ class GetListComponent extends Component {
 			
 			$controllers[$key]['Controller']['order'] = 0;
 			
-			if(empty($controller['Controller'])) { continue; }
+			if (empty($controller['Controller'])) { continue; }
 			
 			$importName = $controller['Controller']['importName'];
 			extract($controller['Controller']['properties']);
 			
 
 			App::uses($controller, $importName);
-			if(class_exists($controller)) {
+			if (class_exists($controller)) {
 				$controllers[$key]['Controller']['order'] = isset($controller::$order) ? intval($controller::$order) : 0;
 			}
 			
@@ -115,7 +115,7 @@ class GetListComponent extends Component {
 	protected function _baseName($name = '') { return $name === 'AppController' ? $this->_humanize($name) : str_replace(array('Controller', 'App'), '', $name); }
 	
 	protected function _make($resetCache = false) {
-		if($resetCache) { $this->_flushCache(); }
+		if ($resetCache) { $this->_flushCache(); }
 		
 		extract($this->settings);
 
@@ -133,7 +133,7 @@ class GetListComponent extends Component {
 				)
 			);
 		}
-		if(!$plugins_disable) {
+		if (!$plugins_disable) {
 			$this->pluginList = $plugins = $this->_exclude(CakePlugin::loaded(), $plugins_exclude);
 			$this->pluginList = $plugins = $this->_include($plugins, $plugins_include);
 			
@@ -141,7 +141,7 @@ class GetListComponent extends Component {
 				
 				$pluginControllers = App::objects("{$plugin}.Controller", null, false);
 				
-				if(empty($pluginControllers)) { continue; }
+				if (empty($pluginControllers)) { continue; }
 
 				foreach($pluginControllers as $key => $pluginController) {
 					$baseName = $this->_baseName($pluginController);
@@ -157,7 +157,7 @@ class GetListComponent extends Component {
 						)
 					);
 
-					if($exclude_appControllers && preg_match('/App/', $pluginController, $matches, PREG_OFFSET_CAPTURE, 3)) {
+					if ($exclude_appControllers && preg_match('/App/', $pluginController, $matches, PREG_OFFSET_CAPTURE, 3)) {
 						$exclude[] = $pluginControllers[$key]['Controller']['key'];
 					}
 				}
@@ -166,8 +166,8 @@ class GetListComponent extends Component {
 			}
 		}
 
-		if($exclude_currentController) { $exclude[] = $this->controller->name; }
-		if($exclude_appControllers) { $exclude[] = 'App Controller'; }
+		if ($exclude_currentController) { $exclude[] = $this->controller->name; }
+		if ($exclude_appControllers) { $exclude[] = 'App Controller'; }
 		
 
 		$controllers = $this->_exclude($controllers, $exclude);
@@ -190,11 +190,11 @@ class GetListComponent extends Component {
 	}
 
 	protected function _checkOrMake() {
-		if($this->settings['cache'] !== false) {
+		if ($this->settings['cache'] !== false) {
 			$cached = Cache::read('ControllersListPlugin');
 			
-			if(empty($cached)) {
-				if($this->settings['log']) {
+			if (empty($cached)) {
+				if ($this->settings['log']) {
 					$this->controller->log(array(
 						'ControllersListPlugin' => 'no cache found, creating cache'
 					), 'debug');
@@ -203,9 +203,9 @@ class GetListComponent extends Component {
 				return $this->_make(true);
 			}
 			
-			if($cached['settings'] !== $this->settings) {
+			if ($cached['settings'] !== $this->settings) {
 				
-				if($this->settings['log']) {
+				if ($this->settings['log']) {
 					$this->controller->log(array(
 						'ControllersListPlugin'	=> 'settings changed re-creating cache',
 						'cachedSettings'		=> $cached['settings'],
