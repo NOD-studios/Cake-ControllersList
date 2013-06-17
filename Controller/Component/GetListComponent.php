@@ -111,7 +111,8 @@ class GetListComponent extends Component {
     	return $this->controllersList = Set::sort($controllers, "{n}.Controller.{$order_by}", $order_sort);
     }
 
-    protected function _humanize($name = '') { return Inflector::humanize(Inflector::underscore($name)); }
+    protected function _humanize($name = '') { return Inflector::humanize($this->_underscore($name)); }
+    protected function _underscore($name = '') { return Inflector::underscore($name); }
 	protected function _baseName($name = '') { return $name === 'AppController' ? $this->_humanize($name) : str_replace(array('Controller', 'App'), '', $name); }
 	
 	protected function _make($resetCache = false) {
@@ -127,7 +128,7 @@ class GetListComponent extends Component {
 					'key'			=> $baseName,
 					'properties'		=> array(
 						'name'			=> $this->_humanize($baseName),
-						'controller'	=> $controller
+						'controller'	=> $this->_underscore($baseName),
 					),
 					'importName'	=> 'Controller'
 				)
@@ -150,7 +151,7 @@ class GetListComponent extends Component {
 							'key'			=> $baseName,
 							'properties'			=> array(
 								'name'			=> $this->_humanize($baseName),
-								'controller'	=> $pluginController,
+								'controller'	=> $baseName,
 								'plugin'		=> $plugin
 							),
 							'importName'	=> "{$plugin}.Controller"
