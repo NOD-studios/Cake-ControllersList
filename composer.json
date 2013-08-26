@@ -1,5 +1,5 @@
 {
-    "name": "nod.st/controllers_list",
+    "name": "nod.st/cake-controllers-list",
     "description": "CakePHP Controllers List",
     "type": "cakephp-plugin",
     "keywords": ["cakephp", "controller", "list", "component"],
