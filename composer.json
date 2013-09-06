@@ -1,6 +1,5 @@
 {
     "name"				: "nod.st/cakephp-controllers-list",
-    "version"			: "1.1.2",
     "description"		: "CakePHP Controllers List",
     "type"				: "cakephp-plugin",
     "keywords"			: ["cakephp", "controller", "list", "component"],
